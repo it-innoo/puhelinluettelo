@@ -1,7 +1,2 @@
 POST http://localhost:3001/persons
 Content-Type: application/json
-
-{
-   "name": "Jane Doe",
-   "number": "041-123456"
-}
