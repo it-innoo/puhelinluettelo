@@ -1,15 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-<<<<<<< HEAD
 
 const app = express()
-=======
->>>>>>> 21abbd7f2dc4700861292b9b2436478bd6b9768d
 
-const app = express()
 app.use(bodyParser.json())
-app.use(morgan('tiny'))
+// app.use(morgan('tiny'))
+morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     {
@@ -81,8 +79,6 @@ app.get('/api/persons/:id', (req, res) => {
 app.post('/persons', (req, res) => {
   const person = req.body
   person.id = generatedId()
-
-  console.log(person)
 
   if (!person.name || !person.number) {
     return res.status(400).json({
