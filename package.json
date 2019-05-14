@@ -11,7 +11,8 @@
   "author": "jailgreen <jukka@jahlgren.eu>",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "morgan": "^1.9.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.0"
