@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
 
 const app = express()
+const Person = require('./models/person')
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -12,6 +14,7 @@ app.use(express.static('build'))
 morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+/*
 let persons = [
     {
       "name": "Arto Hellas",
@@ -34,7 +37,7 @@ let persons = [
       "id": 4
     }
   ]
-
+*/
 const generatedId = () => {
   const maxId = persons.length > 0
     ? Math.max(...persons.map(p => p.id))
@@ -63,7 +66,11 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({})
+    .then(persons => {
+      res.json(persons.map(peron => peron.toJSON()))
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
@@ -109,7 +116,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
