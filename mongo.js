@@ -26,7 +26,7 @@ if (process.argv.length === 3) {
   Person
     .find({})
     .then(persons => {
-      persons.forEach(person => {
+      persons.map(person => {
         console.log(`${person.name} ${person.number}`)
       })
       
