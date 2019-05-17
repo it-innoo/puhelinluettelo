@@ -14,7 +14,7 @@ app.use(express.static('build'))
 morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-/*
+
 let persons = [
     {
       "name": "Arto Hellas",
@@ -37,7 +37,7 @@ let persons = [
       "id": 4
     }
   ]
-*/
+
 const generatedId = () => {
   const maxId = persons.length > 0
     ? Math.max(...persons.map(p => p.id))
@@ -54,15 +54,20 @@ app.get('/', (req, res) => {
 
 app.get('/info', (req, res) => {
 
-  res.send(
-    `<p>
-    Puhelinluettelossa
-    ${persons.length} henkilön tiedot
-    </p>
-    <p>
-      ${new Date()}
-    </p>`
-    )
+  Person
+    .find()
+    .then(persons => {
+      res.send(
+        `<p>
+        Puhelinluettelossa
+        ${persons.length} henkilön tiedot
+        </p>
+        <p>
+          ${new Date()}
+        </p>`
+        )
+    })
+  
 })
 
 app.get('/api/persons', (req, res) => {
@@ -83,28 +88,28 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).end()
   }
-  
+
 })
 
 app.post('/api/persons', (req, res) => {
-  const person = req.body
-  person.id = generatedId()
-
-  if (!person.name || !person.number) {
-    return res.status(400).json({
-      error: 'name or number missing'
-    })
+  const body = req.body
+  
+  console.log('backend post body: ', body)
+  if (body.name === undefined || body.name === '') {
+    return res.status(400).send({ error: 'name is missing' })
   }
+  
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  })
 
-  if (persons.filter(p => p.name === person.name).length > 0) {
-    return res.status(400).json({
-      error: 'name must be unique'
+  console.log(`backend post: ${person}`)
+  person
+    .save()
+    .then(savedPerson => {
+      res.json(savedPerson.toJSON())
     })
-  }
-
-  // persons = persons.concat(person)
-  persons = [...persons, person]
-  res.json(person)
 })
 
 app.delete('/api/persons/:id', (req, res) => {
