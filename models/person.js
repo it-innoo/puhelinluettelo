@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
@@ -10,7 +12,7 @@ console.log('connecting to', url)
 mongoose.connect(url, {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useFindAndModify: false
+  useFindAndModify: false,
 })
   .then(() => {
     console.log('connected to MongoDB')
@@ -25,23 +27,24 @@ const personSchema = mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
-    unique: true
+    unique: true,
   },
   number: {
     type: String,
     required: true,
     minlength: 8,
-  }
+  },
 })
 
 personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
+    // eslint-disable-next-line no-param-reassign
     returnedObject.id = returnedObject._id
     delete returnedObject._id
     delete returnedObject.__v
-  }
+  },
 })
 
 

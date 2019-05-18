@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-if ( process.argv.length < 3 ) {
+if (process.argv.length < 3) {
   console.log('Salasana uupuu!')
   process.exit(1)
 }
@@ -8,8 +8,7 @@ if ( process.argv.length < 3 ) {
 
 const password = process.argv[2]
 
-const url =
-    `mongodb+srv://jahlgren:${password}@cluster0-kagf9.mongodb.net/phonebook?retryWrites=true`
+const url = `mongodb+srv://jahlgren:${password}@cluster0-kagf9.mongodb.net/phonebook?retryWrites=true`
 
 const personSchema = new mongoose.Schema({
   name: String,
@@ -25,8 +24,9 @@ if (process.argv.length === 3) {
 
   Person
     .find({})
-    .then(persons => {
-      persons.map(person => {
+    .then((persons) => {
+      // eslint-disable-next-line array-callback-return
+      persons.map((person) => {
         console.log(`${person.name} ${person.number}`)
       })
 
