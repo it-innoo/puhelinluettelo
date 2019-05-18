@@ -11,7 +11,7 @@ app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(cors())
 
-morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('body', function (req) { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 
@@ -33,9 +33,9 @@ app.get('/info', (req, res) => {
         <p>
           ${new Date()}
         </p>`
-        )
+      )
     })
-  
+
 })
 
 app.get('/api/persons', (req, res) => {
@@ -47,7 +47,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
-  
+
   Person
     .findById(req.params.id)
     .then(person => {
@@ -56,7 +56,7 @@ app.get('/api/persons/:id', (req, res, next) => {
       } else {
         res.status(404).end()
       }
-      
+
     })
     .catch(error => next(error))
 })
@@ -88,9 +88,9 @@ app.put('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndUpdate(
     req.params.id,
     person,
-    {new: true},
-    {runValidators: true, context: 'query'}
-    )
+    { new: true },
+    { runValidators: true, context: 'query' }
+  )
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
@@ -100,8 +100,8 @@ app.put('/api/persons/:id', (req, res, next) => {
 app.delete('/api/persons/:id', (req, res, next) => {
   Person
     .findByIdAndRemove(req.params.id)
-      .then(result => {
-        res.status(204).end()
+    .then(() => {
+      res.status(204).end()
     })
     .catch(error => next(error))
 })
@@ -118,14 +118,14 @@ app.use(unknownEndpoint)
 const errorHandler = (error, req, res, next) => {
   console.log(error.message)
 
-  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return res
       .status(400)
       .send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
-      return res
-        .status(400)
-        .json({ error: error.message })  }
+    return res
+      .status(400)
+      .json({ error: error.message })  }
 
   next(error)
 }

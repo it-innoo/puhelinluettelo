@@ -12,8 +12,8 @@ const url =
     `mongodb+srv://jahlgren:${password}@cluster0-kagf9.mongodb.net/phonebook?retryWrites=true`
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+  name: String,
+  number: String,
 })
 
 mongoose.connect(url, { useNewUrlParser: true })
@@ -29,19 +29,19 @@ if (process.argv.length === 3) {
       persons.map(person => {
         console.log(`${person.name} ${person.number}`)
       })
-      
 
-      mongoose.connection.close();
+
+      mongoose.connection.close()
       process.exit(0)
-  })
-}        
-  
+    })
+}
+
 const person = new Person({
-    name: process.argv[3],
-    number: process.argv[4],
+  name: process.argv[3],
+  number: process.argv[4],
 })
 
-person.save().then(response => {
-  console.log(`lisätään ${person.name} numero ${person.number} luetteloon`);
-  mongoose.connection.close();
+person.save().then(() => {
+  console.log(`lisätään ${person.name} numero ${person.number} luetteloon`)
+  mongoose.connection.close()
 })
