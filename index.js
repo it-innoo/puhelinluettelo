@@ -61,13 +61,9 @@ app.get('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
-  
-  if (body.name === undefined || body.name === '') {
-    return res.status(400).send({ error: 'name is missing' })
-  }
-  
+
   const person = new Person({
     name: body.name,
     number: body.number
@@ -78,6 +74,7 @@ app.post('/api/persons', (req, res) => {
     .then(savedPerson => {
       res.json(savedPerson.toJSON())
     })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -88,7 +85,12 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: body.number
   }
 
-  Person.findByIdAndUpdate(req.params.id, person, {new: true})
+  Person.findByIdAndUpdate(
+    req.params.id,
+    person,
+    {new: true},
+    {runValidators: true, context: 'query'}
+    )
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
@@ -105,22 +107,34 @@ app.delete('/api/persons/:id', (req, res, next) => {
 })
 
 
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
 
+// olemattomien osoitteiden käsittely
+app.use(unknownEndpoint)
 
 
 const errorHandler = (error, req, res, next) => {
   console.log(error.message)
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
-    return res.status(400).send({ error: 'malformatted id' })
-  }
+    return res
+      .status(400)
+      .send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+      return res
+        .status(400)
+        .json({ error: error.message })  }
 
   next(error)
 }
 
 // virheellisten pyyntöjen käsittely
 app.use(errorHandler)
+
+
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
